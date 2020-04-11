@@ -8,6 +8,10 @@ function love.load()
     level:setRun(true)
 end
 
+function love.keypressed(key)
+    level:keypressed(key)
+end
+
 function love.update(dt)
     level:update(dt)
 end

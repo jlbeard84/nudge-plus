@@ -1,7 +1,13 @@
 Level = Object.extend(Object)
 
+local keyPressed = false
+
 local spriteHeightWidth = 32
 local mapSpriteXYSize = 16
+local playerSpeed = 20
+
+local playerSprite
+
 local waterSprite
 local waterSpriteNum = 0
 
@@ -36,6 +42,8 @@ local sandBottomRightShore
 local sandBottomRightShoreNum = 27
 
 local function loadSprites()
+    playerSprite = love.graphics.newImage("/sprites/player.png")
+
     waterSprite = love.graphics.newImage("/sprites/water.png")
 
     grassSprite1 = love.graphics.newImage("/sprites/grass_base_1.png")
@@ -51,15 +59,27 @@ local function loadSprites()
     sandBottomLeftShore = love.graphics.newImage("/sprites/sand_bottomleftshore.png")
 end
 
+local function playerPositionValid(self, posX, posY)
+    if posX < 1 or posX > mapSpriteXYSize or posY < 1 or posY > mapSpriteXYSize or self.map[posY][posX] == 0 then
+        return false
+    end
+
+    return true
+end
+
 function Level:new(levelMap)
     self.map = {}
     self.run = false
+    self.playerPosition = { 0, 0 }
+    self.playerXY = { 0, 0 }
 
     loadSprites()
 end
 
-function Level:loadMap(map)
+function Level:loadMap(map, playerStartPosition)
     self.map = map
+    self.playerPosition = playerStartPosition
+    self.playerXY = { self.playerPosition[1] * spriteHeightWidth, self.playerPosition[2] * spriteHeightWidth}
 end
 
 function Level:setRun(shouldRun)
@@ -67,10 +87,44 @@ function Level:setRun(shouldRun)
 end
 
 function Level:update(dt)
-    -- animate map sprites
 
     if not(self.run) then
         return
+    end
+
+    self.playerXY[1] = self.playerXY[1] - ((self.playerXY[1]  - (self.playerPosition[1]*spriteHeightWidth)) * playerSpeed * dt)
+    self.playerXY[2] = self.playerXY[2] - ((self.playerXY[2]  - (self.playerPosition[2]*spriteHeightWidth)) * playerSpeed * dt)
+end
+
+function Level:keypressed(key)
+
+    local moveX = 0
+    local moveY = 0
+
+    if key == "right" then
+        moveX = 1
+    end
+    
+    if key == "left" then
+        moveX = -1
+    end
+
+    if key == "down" then
+        moveY = 1
+    end
+
+    if key == "up" then
+        moveY = -1
+    end
+
+    local newPosX = self.playerPosition[1] + moveX
+    local newPosY = self.playerPosition[2] + moveY
+
+    if  playerPositionValid(self, newPosX, newPosY) then
+        self.playerPosition[1] = newPosX
+        self.playerPosition[2] = newPosY
+    else
+        --play sound
     end
 end
 
@@ -110,4 +164,6 @@ function Level:draw()
             love.graphics.draw(spriteToDraw, j * spriteHeightWidth, i * spriteHeightWidth)
         end
     end
+
+    love.graphics.draw(playerSprite, self.playerXY[1], self.playerXY[2])
 end
