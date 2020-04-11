@@ -35,36 +35,6 @@ local sandBottomLeftShoreNum = 26
 local sandBottomRightShore
 local sandBottomRightShoreNum = 27
 
-local level1 = {
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 2, 1, 0 },
-    { 0, 1, 2, 21, 24, 24, 24, 24, 24, 24, 20, 2, 24, 24, 27, 0 },
-    { 0, 26, 24, 27, 0, 0, 0, 0, 0, 0, 26, 1, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 },
-    { 0, 1, 1, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 0 },
-    { 0, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 0 },
-    { 0, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 1, 0 },
-    { 0, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 0 },
-    { 0, 25, 20, 23, 0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 2, 0 },
-    { 0, 26, 24, 27, 0, 0, 0, 0, 25, 20, 21, 20, 23, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 26, 24, 24, 24, 27, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-}
-
-local function populateLevelTable(levelTable)
-    for i = 1, mapSpriteXYSize do
-        levelTable[i] = {}
-
-        for j = 1, mapSpriteXYSize do
-            levelTable[i][j] = level1[i][j]
-        end
-    end
-end
-
 local function loadSprites()
     waterSprite = love.graphics.newImage("/sprites/water.png")
 
@@ -81,12 +51,15 @@ local function loadSprites()
     sandBottomLeftShore = love.graphics.newImage("/sprites/sand_bottomleftshore.png")
 end
 
-function Level:new(levelName)
+function Level:new(levelMap)
     self.map = {}
     self.run = false
 
-    populateLevelTable(self.map)
     loadSprites()
+end
+
+function Level:loadMap(map)
+    self.map = map
 end
 
 function Level:setRun(shouldRun)

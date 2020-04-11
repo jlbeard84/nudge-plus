@@ -1,8 +1,10 @@
 function love.load()
     Object = require "libs.classic"
     require "classes.level"
+    require "levels.level_1"
 
-    level = Level("levelname")
+    level = Level1()
+    level:loadMap()
     level:setRun(true)
 end
 
