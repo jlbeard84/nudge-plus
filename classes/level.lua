@@ -4,9 +4,10 @@ local keyPressed = false
 
 local spriteHeightWidth = 32
 local mapSpriteXYSize = 16
-local playerSpeed = 20
+local playerSpeed = 30
 
 local playerSprite
+local bananaSprite
 
 local waterSprite
 local waterSpriteNum = 0
@@ -43,6 +44,7 @@ local sandBottomRightShoreNum = 27
 
 local function loadSprites()
     playerSprite = love.graphics.newImage("/sprites/player.png")
+    bananaSprite = love.graphics.newImage("/sprites/banana.png")
 
     waterSprite = love.graphics.newImage("/sprites/water.png")
 
@@ -67,19 +69,33 @@ local function playerPositionValid(self, posX, posY)
     return true
 end
 
+local function convertToLocalPosition(x, y)
+    local localX = x * spriteHeightWidth
+    local localY = y * spriteHeightWidth
+
+    return { localX, localY }
+end
+
 function Level:new(levelMap)
     self.map = {}
     self.run = false
     self.playerPosition = { 0, 0 }
     self.playerXY = { 0, 0 }
+    self.bananaPositions = {}
+    self.bananaXYs = {}
 
     loadSprites()
 end
 
-function Level:loadMap(map, playerStartPosition)
+function Level:loadMap(map, playerStartPosition, bananaPositions)
     self.map = map
     self.playerPosition = playerStartPosition
-    self.playerXY = { self.playerPosition[1] * spriteHeightWidth, self.playerPosition[2] * spriteHeightWidth}
+    self.playerXY = convertToLocalPosition(self.playerPosition[1], self.playerPosition[2])
+    self.bananaPositions = bananaPositions
+
+    for i, bananaPosition in ipairs(bananaPositions) do
+        table.insert(self.bananaXYs, convertToLocalPosition(bananaPosition[1], bananaPosition[2]))
+    end
 end
 
 function Level:setRun(shouldRun)
@@ -166,4 +182,8 @@ function Level:draw()
     end
 
     love.graphics.draw(playerSprite, self.playerXY[1], self.playerXY[2])
+
+    for i, bananaXY in ipairs(self.bananaXYs) do
+        love.graphics.draw(bananaSprite, bananaXY[1], bananaXY[2])
+    end
 end

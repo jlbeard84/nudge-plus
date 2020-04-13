@@ -21,6 +21,11 @@ local level1 = {
 
 local startPos = { 4, 7 }
 
+local bananaPositions = {
+    { 12, 5 },
+    { 12, 6 }
+}
+
 function Level1:loadMap()
-    Level1.super.loadMap(self, level1, startPos)
+    Level1.super.loadMap(self, level1, startPos, bananaPositions)
 end
