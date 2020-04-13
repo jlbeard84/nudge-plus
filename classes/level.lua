@@ -61,7 +61,7 @@ local function loadSprites()
     sandBottomLeftShore = love.graphics.newImage("/sprites/sand_bottomleftshore.png")
 end
 
-local function playerPositionValid(self, posX, posY)
+local function objectPositionValid(self, posX, posY)
     if posX < 1 or posX > mapSpriteXYSize or posY < 1 or posY > mapSpriteXYSize or self.map[posY][posX] == 0 then
         return false
     end
@@ -69,11 +69,28 @@ local function playerPositionValid(self, posX, posY)
     return true
 end
 
+local function objectIntersectsBanana(self, posX, posY)
+    local bananaIndex = 0
+    
+    for i, bananaPosition in ipairs(self.bananaPositions) do
+        if posX == bananaPosition[1] and posY == bananaPosition[2] then 
+            bananaIndex = i
+            break
+        end
+    end
+
+    return bananaIndex
+end
+
 local function convertToLocalPosition(x, y)
     local localX = x * spriteHeightWidth
     local localY = y * spriteHeightWidth
 
     return { localX, localY }
+end
+
+local function convertToGlobalPosition(dt, currentGlobalPosition, currentLocalPosition)
+    return currentGlobalPosition - ((currentGlobalPosition  - (currentLocalPosition*spriteHeightWidth)) * playerSpeed * dt)
 end
 
 function Level:new(levelMap)
@@ -108,8 +125,13 @@ function Level:update(dt)
         return
     end
 
-    self.playerXY[1] = self.playerXY[1] - ((self.playerXY[1]  - (self.playerPosition[1]*spriteHeightWidth)) * playerSpeed * dt)
-    self.playerXY[2] = self.playerXY[2] - ((self.playerXY[2]  - (self.playerPosition[2]*spriteHeightWidth)) * playerSpeed * dt)
+    self.playerXY[1] = convertToGlobalPosition(dt, self.playerXY[1], self.playerPosition[1])
+    self.playerXY[2] = convertToGlobalPosition(dt, self.playerXY[2], self.playerPosition[2])
+
+    for i, bananaPosition in ipairs(self.bananaPositions) do
+        self.bananaXYs[i][1] = convertToGlobalPosition(dt, self.bananaXYs[i][1], bananaPosition[1])
+        self.bananaXYs[i][2] = convertToGlobalPosition(dt, self.bananaXYs[i][2], bananaPosition[2])
+    end
 end
 
 function Level:keypressed(key)
@@ -136,7 +158,22 @@ function Level:keypressed(key)
     local newPosX = self.playerPosition[1] + moveX
     local newPosY = self.playerPosition[2] + moveY
 
-    if  playerPositionValid(self, newPosX, newPosY) then
+    local intersectingBananaIndex = objectIntersectsBanana(self, newPosX, newPosY)
+
+    if intersectingBananaIndex > 0 then
+        local newBananaX = self.bananaPositions[intersectingBananaIndex][1] + moveX
+        local newBananaY = self.bananaPositions[intersectingBananaIndex][2] + moveY
+
+        if objectPositionValid(self, newBananaX, newBananaY) and objectIntersectsBanana(self, newBananaX, newBananaY) == 0 then
+            self.playerPosition[1] = newPosX
+            self.playerPosition[2] = newPosY
+            
+            self.bananaPositions[intersectingBananaIndex][1] = newBananaX
+            self.bananaPositions[intersectingBananaIndex][2] = newBananaY
+        else
+            --play sound
+        end
+    elseif objectPositionValid(self, newPosX, newPosY) then
         self.playerPosition[1] = newPosX
         self.playerPosition[2] = newPosY
     else
