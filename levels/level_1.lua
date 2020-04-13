@@ -26,6 +26,8 @@ local bananaPositions = {
     { 12, 6 }
 }
 
+local gatePosition = { 3, 3 }
+
 function Level1:loadMap()
-    Level1.super.loadMap(self, level1, startPos, bananaPositions)
+    Level1.super.loadMap(self, level1, startPos, bananaPositions, gatePosition)
 end

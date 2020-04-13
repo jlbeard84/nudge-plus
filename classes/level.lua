@@ -8,6 +8,7 @@ local playerSpeed = 30
 
 local playerSprite
 local bananaSprite
+local gateSprite
 
 local waterSprite
 local waterSpriteNum = 0
@@ -45,6 +46,7 @@ local sandBottomRightShoreNum = 27
 local function loadSprites()
     playerSprite = love.graphics.newImage("/sprites/player.png")
     bananaSprite = love.graphics.newImage("/sprites/banana.png")
+    gateSprite = love.graphics.newImage("/sprites/gate.png")
 
     waterSprite = love.graphics.newImage("/sprites/water.png")
 
@@ -98,17 +100,19 @@ function Level:new(levelMap)
     self.run = false
     self.playerPosition = { 0, 0 }
     self.playerXY = { 0, 0 }
+    self.gatePosition = { 0, 0 }
     self.bananaPositions = {}
     self.bananaXYs = {}
 
     loadSprites()
 end
 
-function Level:loadMap(map, playerStartPosition, bananaPositions)
+function Level:loadMap(map, playerStartPosition, bananaPositions, gatePosition)
     self.map = map
     self.playerPosition = playerStartPosition
     self.playerXY = convertToLocalPosition(self.playerPosition[1], self.playerPosition[2])
     self.bananaPositions = bananaPositions
+    self.gatePosition = gatePosition
 
     for i, bananaPosition in ipairs(bananaPositions) do
         table.insert(self.bananaXYs, convertToLocalPosition(bananaPosition[1], bananaPosition[2]))
@@ -223,4 +227,8 @@ function Level:draw()
     for i, bananaXY in ipairs(self.bananaXYs) do
         love.graphics.draw(bananaSprite, bananaXY[1], bananaXY[2])
     end
+
+    local gateLocalPosition = convertToLocalPosition(self.gatePosition[1], self.gatePosition[2])
+
+    love.graphics.draw(gateSprite, gateLocalPosition[1], gateLocalPosition[2])
 end
