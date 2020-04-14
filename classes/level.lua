@@ -175,6 +175,8 @@ function Level:keypressed(key)
             if self.gatePosition[1] == newBananaX and self.gatePosition[2] == newBananaY then
                 table.remove(self.bananaPositions, intersectingBananaIndex)
                 table.remove(self.bananaXYs, intersectingBananaIndex)
+
+                --play sound
             else
                 self.bananaPositions[intersectingBananaIndex][1] = newBananaX
                 self.bananaPositions[intersectingBananaIndex][2] = newBananaY
@@ -227,8 +229,6 @@ function Level:draw()
         end
     end
 
-    love.graphics.draw(playerSprite, self.playerXY[1], self.playerXY[2])
-
     for i, bananaXY in ipairs(self.bananaXYs) do
         love.graphics.draw(bananaSprite, bananaXY[1], bananaXY[2])
     end
@@ -236,4 +236,15 @@ function Level:draw()
     local gateLocalPosition = convertToLocalPosition(self.gatePosition[1], self.gatePosition[2])
 
     love.graphics.draw(gateSprite, gateLocalPosition[1], gateLocalPosition[2])
+
+    love.graphics.draw(playerSprite, self.playerXY[1], self.playerXY[2])
+
+    drawSidebar(self)
+end
+
+function drawSidebar(self)
+    love.graphics.rectangle("line", 570, 33, 200, 512)
+    love.graphics.draw(bananaSprite, 610, 70)
+    love.graphics.print("X   "..table.getn(self.bananaPositions), 650, 80)
+
 end
