@@ -172,8 +172,13 @@ function Level:keypressed(key)
             self.playerPosition[1] = newPosX
             self.playerPosition[2] = newPosY
             
-            self.bananaPositions[intersectingBananaIndex][1] = newBananaX
-            self.bananaPositions[intersectingBananaIndex][2] = newBananaY
+            if self.gatePosition[1] == newBananaX and self.gatePosition[2] == newBananaY then
+                table.remove(self.bananaPositions, intersectingBananaIndex)
+                table.remove(self.bananaXYs, intersectingBananaIndex)
+            else
+                self.bananaPositions[intersectingBananaIndex][1] = newBananaX
+                self.bananaPositions[intersectingBananaIndex][2] = newBananaY
+            end
         else
             --play sound
         end
